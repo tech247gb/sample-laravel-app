@@ -8,19 +8,31 @@ use App\Actions\CreateTenantAction;
 use Illuminate\Http\Response;
 use App\Http\Resources\TenantResource;
 use App\Http\Resources\TokenResource;
+use Spatie\Permission\Models\Role;
 
 class RegisterController extends Controller
 {
+    public function registerForm()
+    {
+        $roles = Role::all()->pluck('name', 'id');
+        return view('register', compact('roles'));
+    }
+
     public function register(RegisterRequest $request)
     {
-        $tenant = (new CreateTenantAction())($request->validated(), $request->get('domain'));
-
+        $tenant = (new CreateTenantAction())($request->validated());
         $user = $tenant->teams->first()->users->first();
 
-        return response()->json([
-            'message' => 'Tenant created successfully',
-            'tenant' => TenantResource::make($tenant),
-            'token' => new TokenResource($user->createToken('default')),
-        ], Response::HTTP_CREATED);
+        TenantResource::make($tenant);
+        new TokenResource($user->createToken('default'));
+
+        if ($request->input('role')) {
+            $user->assignRole($request->input('role'));
+            return redirect()->route('dashboard');
+        }
+        if (auth()->user()) {
+            return redirect()->route('dashboard');
+        }
+        return redirect()->route('dashboard');
     }
 }

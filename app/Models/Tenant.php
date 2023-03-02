@@ -21,7 +21,7 @@ use Stancl\Tenancy\Database\Models\Tenant as BaseTenant;
 class Tenant extends BaseTenant implements \Stancl\Tenancy\Contracts\Tenant
 {
     use HasFactory;
-    use HasDomains;
+    // use HasDomains;
    // use Billable;
 
     protected $casts = [
@@ -46,32 +46,32 @@ class Tenant extends BaseTenant implements \Stancl\Tenancy\Contracts\Tenant
     }
 
     // phpcs:disable
-    public function primary_domain()
-    {
-        return $this->hasOne(Domain::class)->where('is_primary', true);
-    }
+    // public function primary_domain()
+    // {
+    //     return $this->hasOne(Domain::class)->where('is_primary', true);
+    // }
 
-    public function fallback_domain()
-    {
-        return $this->hasOne(Domain::class)->where('is_fallback', true);
-    }
+    // public function fallback_domain()
+    // {
+    //     return $this->hasOne(Domain::class)->where('is_fallback', true);
+    // }
     // phpcs:enable
 
-    public function route($route, $parameters = [], $absolute = true)
-    {
-        if (! $this->primary_domain) {
-            throw new NoPrimaryDomainException();
-        }
+    // public function route($route, $parameters = [], $absolute = true)
+    // {
+    //     if (! $this->primary_domain) {
+    //         throw new NoPrimaryDomainException();
+    //     }
 
-        $domain = $this->primary_domain->domain;
+    //     $domain = $this->primary_domain->domain;
 
-        $parts = explode('.', $domain);
-        if (count($parts) === 1) { // If subdomain
-            $domain = Domain::domainFromSubdomain($domain);
-        }
+    //     $parts = explode('.', $domain);
+    //     if (count($parts) === 1) { // If subdomain
+    //         $domain = Domain::domainFromSubdomain($domain);
+    //     }
 
-        return tenant_route($domain, $route, $parameters, $absolute);
-    }
+    //     return tenant_route($domain, $route, $parameters, $absolute);
+    // }
 
     public function impersonationUrl($user_id): string
     {
@@ -122,12 +122,12 @@ class Tenant extends BaseTenant implements \Stancl\Tenancy\Contracts\Tenant
 
     public function isInAdminTeam(?string $userId = null): bool
     {
-        $domain = $this->primary_domain->domain;
+        // $domain = $this->primary_domain->domain;
         return $this
             ->teams()
-            ->whereHas('tenant.domains', function ($query) use ($domain) {
-                $query->where('domain', $domain)->where('tenant_id', $this->getKey());
-            })
+            // ->whereHas('tenant.domains', function ($query) use ($domain) {
+            //     $query->where('domain', $domain)->where('tenant_id', $this->getKey());
+            // })
             ->where('name', 'Admins')
             ->whereHas('users', function ($query) use ($userId) {
                 return $query->where('user_id', $userId ?? auth()->id());

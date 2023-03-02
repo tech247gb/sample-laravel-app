@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 
 class RegisterRequest extends FormRequest
@@ -24,12 +25,20 @@ class RegisterRequest extends FormRequest
      */
     public function rules()
     {
-         return [
+        return [
             'first_name' => 'required|min:2|max:255',
             'last_name' => 'required|min:2|max:255',
-            'domain' => 'required|unique:domains',
+            // 'domain' => 'required|unique:domains',
             'password' => ['required', Password::min(6)->mixedCase()->numbers()->symbols()->uncompromised()],
             'email' => 'required|email|unique:users|unique:tenants',
+            'role' => 'nullable',
         ];
+    }
+
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'password' => Hash::make($this->password),
+        ]);
     }
 }

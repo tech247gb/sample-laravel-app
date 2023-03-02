@@ -1,0 +1,5 @@
+Warning: TTY mode requires /dev/tty to be read/writable.
+PHPUnit 9.6.3 by Sebastian Bergmann and contributors.
+
+Cannot open file "=".
+

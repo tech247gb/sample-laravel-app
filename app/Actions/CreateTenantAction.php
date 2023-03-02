@@ -16,10 +16,10 @@ use App\Models\User;
  */
 class CreateTenantAction
 {
-    public function __invoke(array $data, string $domain, bool $createStripeCustomer = true): Tenant
+    public function __invoke(array $data, bool $createStripeCustomer = true): Tenant  //string $domain
     {
         $tenant = $this->createTenant($data);
-        $this->createDomain($tenant, $domain);
+        // $this->createDomain($tenant, $domain);
         $user = $this->createUser($tenant);
         $team = $this->createAdminTeam($tenant);
         $team->users()->attach($user);
@@ -35,15 +35,15 @@ class CreateTenantAction
         ]);
     }
 
-    protected function createDomain(Tenant $tenant, string $domain): Domain
-    {
-        $domainModel = $tenant->createDomain([
-            'domain' => $domain,
-            'location_name' => $tenant->company . ' (Main Location)',
-        ])->makePrimary()->makeFallback();
-        //DomainCreated::dispatch($domainModel->fresh());
-        return $domainModel;
-    }
+    // protected function createDomain(Tenant $tenant, string $domain): Domain
+    // {
+    //     $domainModel = $tenant->createDomain([
+    //         'domain' => $domain,
+    //         'location_name' => $tenant->company . ' (Main Location)',
+    //     ])->makePrimary()->makeFallback();
+    //     //DomainCreated::dispatch($domainModel->fresh());
+    //     return $domainModel;
+    // }
 
     protected function createUser(Tenant $tenant): User
     {

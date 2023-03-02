@@ -13,6 +13,8 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Mail;
 use Laravel\Sanctum\HasApiTokens;
 use App\Notifications\ResetPassword;
+use Spatie\Permission\Traits\HasPermissions;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
@@ -20,6 +22,11 @@ class User extends Authenticatable
     use Notifiable;
     use HasFactory;
     use HasUuids;
+    use HasRoles;
+    use HasPermissions;
+
+    protected $table='users';
+    protected $primaryKey='id';
 
     /**
      * The attributes that are mass assignable.
